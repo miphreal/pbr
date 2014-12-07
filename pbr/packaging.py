@@ -142,8 +142,12 @@ def parse_requirements(requirements_files=None):
         # Handle nested requirements files such as:
         # -r other-requirements.txt
         if line.startswith('-r'):
+            cur_req_file = next(iter(_any_existing(requirements_files)), None)
             req_file = line.partition(' ')[2]
-            requirements += parse_requirements([req_file])
+            requirements += parse_requirements([
+                req_file,
+                os.path.join(os.path.dirname(cur_req_file), req_file)  # in case it was relative path
+            ])
             continue
 
         try:
